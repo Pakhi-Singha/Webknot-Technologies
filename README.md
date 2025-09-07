@@ -12,7 +12,7 @@ After cloning, copy paste the following commands in the terminal if you're using
 - pip install -r requirements.txt
 - cd backend
 - python -c "from db import engine, Base; import models; Base.metadata.create_all(bind=engine); print('Tables created')" #create tables
-- python -c "import sqlite3; sql=open('seed.sql','r',encoding='utf-8').read(); con=sqlite3.connect('campus.db'); con.executescript(sql); con.commit(); con.close(); print('Seeded campus.db')" #seed tables with seed.sql data, you can use other data of the same format if you want
+- python -c "import sqlite3; sql=open('seed.sql','r',encoding='utf-8').read(); con=sqlite3.connect('campus.db'); con.executescript(sql); con.commit(); con.close(); print('Seeded campus.db')" #seed tables with seed.sql data or other data
 - python -m uvicorn main:app --reload #run
 
 Otherwise use suitable Linux/Mac commands instead, based on your environment.

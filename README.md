@@ -17,7 +17,12 @@ After cloning, copy paste the following commands in the terminal if you're using
 
 Otherwise use suitable Linux/Mac commands instead, based on your environment.
 
-These were the executed commands for docs screenshots:
+Open the link running and add /docs to the end.
+- http://127.0.0.1:8000/docs
+
+Execute the commands as needed.
+ 
+These were the commands I executed for screenshots:
 - GET /reports/event-popularity?college_id=...
 - GET /reports/student-participation?student_id=...
 - GET /reports/attendance?event_id=...

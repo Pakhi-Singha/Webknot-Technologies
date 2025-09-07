@@ -3,7 +3,7 @@ To run clone the repository
 - git clone https://github.com/Pakhi-Singha/Webknot-Technologies.git
 
 After cloning, copy paste the following commands in terminal.
-- cd backend
+- cd Webknot-Technologies/backend
 - python -m venv .venv && . .venv/Scripts/activate  # (for Windows) or source .venv/bin/activate (for Linux/Mac)
 - pip install -r requirements.txt
 - uvicorn backend.main:app --reload

@@ -8,7 +8,7 @@ Clone the repository
 After cloning, copy paste the following commands in the terminal if you're using Windows.
 - cd Webknot-Technologies/backend
 - python -m venv .venv #Remember to select the new environment for the workspace
-- .\.venv\Scripts\Activate.ps1
+- & .\.venv\Scripts\Activate.ps1
 - pip install -r requirements.txt
 - python -m uvicorn main:app --reload
 Otherwise use suitable Linux/Mac commands instead, based on your environment.

@@ -1,6 +1,6 @@
 # Webknot-Technologies
 To run clone the repository 
-- https://github.com/Pakhi-Singha/Webknot-Technologies.git
+- git clone https://github.com/Pakhi-Singha/Webknot-Technologies.git
 
 After cloning, copy paste the following commands in terminal.
 - cd backend

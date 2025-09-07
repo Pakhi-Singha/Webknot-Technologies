@@ -6,7 +6,7 @@ Clone the repository
 - git clone https://github.com/Pakhi-Singha/Webknot-Technologies.git
 
 After cloning, copy paste the following commands in the terminal if you're using Windows.
-- cd Webknot-Technologies/backend
+- cd Webknot-Technologies
 - python -m venv .venv #Remember to select the new environment for the workspace
 - & .\\.venv\Scripts\Activate.ps1
 - pip install -r requirements.txt

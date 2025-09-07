@@ -29,7 +29,7 @@
 - GET  /reports/student-participation?student_id=...
 - GET  /reports/attendance?event_id=...
 - GET  /reports/average-feedback?event_id=...
-- GET  /reports/top-active-students?college_id=...&limit=3
+- GET  /reports/top-active-students?college_id=...&limit=...
 - GET /reports/event-popularity?college_id=...&type=Workshop|Fest|Seminar
 
 ## Workflows
@@ -55,4 +55,5 @@
 - Workflow was altered to include event updation script.
 - Workflow was altered to include attendance monitoring and feedback.
 - Workflow was altered to include the API usage of the event monitoring system.
+- Frontend was developed with HTML for a cleaner interface.
 

@@ -5,8 +5,8 @@ from datetime import datetime
 from sqlalchemy.orm import Session
 from sqlalchemy import func, select, desc
 from sqlalchemy.exc import IntegrityError
-from .db import Base, engine, get_db
-from .models import College, Student, Event, Registration, Attendance, Feedback
+from db import Base, engine, get_db
+from models import College, Student, Event, Registration, Attendance, Feedback
 from pydantic.alias_generators import to_camel
 
 app = FastAPI(title="Campus Events API")

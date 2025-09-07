@@ -15,7 +15,7 @@ The backend folder contains:
 
 The docs folder contains:
 
-- ai-log: AI chat logs used to build this application.
+- ai-log folder: AI chat logs used to build this application are in this folder.
 - design.md: the plan created before beginning work on this application. It discusses everything this application needs to accomplish.
 - er_diagram.png: a photo of the ER diagram for the database.
 

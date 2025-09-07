@@ -1,1 +1,155 @@
+from fastapi import FastAPI, Depends, HTTPException
+from pydantic import BaseModel, Field
+from typing import Optional, List
+from datetime import datetime
+from sqlalchemy.orm import Session
+from sqlalchemy import func, select, desc
+from .db import Base, engine, get_db
+from .models import College, Student, Event, Registration, Attendance, Feedback
+
+app = FastAPI(title="Campus Events API")
+
+# Create tables
+Base.metadata.create_all(bind=engine)
+
+# ====== Schemas ======
+class CollegeIn(BaseModel):
+    name: str
+
+class StudentIn(BaseModel):
+    college_id: int
+    name: str
+    email: str
+    year: Optional[str] = None
+
+class EventIn(BaseModel):
+    college_id: int
+    title: str
+    type: str
+    starts_at: datetime
+    ends_at: datetime
+
+class RegistrationIn(BaseModel):
+    student_id: int
+    event_id: int
+
+class CheckinIn(BaseModel):
+    student_id: int
+    event_id: int
+
+class FeedbackIn(BaseModel):
+    student_id: int
+    event_id: int
+    rating: int = Field(ge=1, le=5)
+    comment: Optional[str] = None
+
+# ====== CRUD endpoints ======
+@app.post("/colleges")
+def create_college(payload: CollegeIn, db: Session = Depends(get_db)):
+    c = College(name=payload.name)
+    db.add(c); db.commit(); db.refresh(c)
+    return c
+
+@app.post("/students")
+def create_student(payload: StudentIn, db: Session = Depends(get_db)):
+    s = Student(**payload.model_dump())
+    db.add(s)
+    try:
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise HTTPException(400, "Student email already exists in this college.")
+    db.refresh(s)
+    return s
+
+@app.post("/events")
+def create_event(payload: EventIn, db: Session = Depends(get_db)):
+    e = Event(**payload.model_dump())
+    db.add(e)
+    try:
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise HTTPException(400, "Event already exists for this college at this time.")
+    db.refresh(e)
+    return e
+
+@app.post("/registrations")
+def register_student(payload: RegistrationIn, db: Session = Depends(get_db)):
+    r = Registration(**payload.model_dump())
+    db.add(r)
+    try:
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise HTTPException(400, "Duplicate registration.")
+    db.refresh(r)
+    return r
+
+@app.post("/attendance/checkin")
+def checkin(payload: CheckinIn, db: Session = Depends(get_db)):
+    a = Attendance(**payload.model_dump())
+    db.add(a)
+    try:
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise HTTPException(400, "Already checked in.")
+    db.refresh(a)
+    return a
+
+@app.post("/feedback")
+def post_feedback(payload: FeedbackIn, db: Session = Depends(get_db)):
+    f = Feedback(**payload.model_dump())
+    db.add(f)
+    try:
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise HTTPException(400, "Feedback already exists for this student & event.")
+    db.refresh(f)
+    return f
+
+# ====== Reports ======
+@app.get("/reports/event-popularity")
+def event_popularity(college_id: int, type: Optional[str] = None, db: Session = Depends(get_db)):
+    q = (
+        db.query(Event.id, Event.title, Event.type, func.count(Registration.id).label("registrations"))
+        .join(Registration, Registration.event_id == Event.id, isouter=True)
+        .filter(Event.college_id == college_id)
+        .group_by(Event.id)
+        .order_by(desc("registrations"))
+    )
+    if type:
+        q = q.filter(Event.type == type)
+    return q.all()
+
+@app.get("/reports/student-participation")
+def student_participation(student_id: int, db: Session = Depends(get_db)):
+    total = db.query(func.count(Attendance.id)).filter(Attendance.student_id == student_id).scalar()
+    return {"student_id": student_id, "events_attended": total}
+
+@app.get("/reports/attendance")
+def attendance_percentage(event_id: int, db: Session = Depends(get_db)):
+    regs = db.query(func.count(Registration.id)).filter(Registration.event_id == event_id).scalar()
+    atts = db.query(func.count(Attendance.id)).filter(Attendance.event_id == event_id).scalar()
+    pct = (atts / regs * 100.0) if regs else 0.0
+    return {"event_id": event_id, "registrations": regs, "attended": atts, "attendance_percent": round(pct, 2)}
+
+@app.get("/reports/average-feedback")
+def average_feedback(event_id: int, db: Session = Depends(get_db)):
+    avg = db.query(func.avg(Feedback.rating)).filter(Feedback.event_id == event_id).scalar()
+    return {"event_id": event_id, "avg_feedback": round(float(avg), 2) if avg else None}
+
+@app.get("/reports/top-active-students")
+def top_active_students(college_id: int, limit: int = 3, db: Session = Depends(get_db)):
+    q = (
+        db.query(Student.id, Student.name, func.count(Attendance.id).label("attended"))
+        .join(Attendance, Attendance.student_id == Student.id)
+        .filter(Student.college_id == college_id)
+        .group_by(Student.id)
+        .order_by(desc("attended"))
+        .limit(limit)
+    )
+    return q.all()
 

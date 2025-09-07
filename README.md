@@ -18,8 +18,9 @@ After cloning, copy paste the following commands in the terminal if you're using
 Otherwise use suitable Linux/Mac commands instead, based on your environment.
 
 These were the executed commands for docs screenshots:
-- GET /reports/event-popularity?college_id=1
-- GET /reports/event-popularity?college_id=1&type=Workshop
-- GET /reports/attendance?event_id=1
-- GET /reports/average-feedback?event_id=1
-- GET /reports/top-active-students?college_id=1&limit=3
+- GET /reports/event-popularity?college_id=...
+- GET /reports/student-participation?student_id=...
+- GET /reports/attendance?event_id=...
+- GET /reports/average-feedback?event_id=...
+- GET /reports/top-active-students?college_id=...&limit=3
+- GET /reports/event-popularity?college_id=...&type=Workshop|Fest|Seminar

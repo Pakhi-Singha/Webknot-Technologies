@@ -1,51 +1,73 @@
--- Total registrations per event (popularity)
-SELECT e.id, e.title, e.type, COUNT(r.id) AS registrations
+-- Total registrations per event (popularity) in a college
+SELECT
+  e.event_id,
+  e.title,
+  e.type,
+  COUNT(r.registration_id) AS registrations
 FROM events e
-LEFT JOIN registrations r ON r.event_id = e.id
-WHERE e.college_id = :college_id
-GROUP BY e.id
+LEFT JOIN registrations r ON r.event_id = e.event_id
+WHERE e.college_id = :CollegeId
+GROUP BY e.event_id, e.title, e.type
+ORDER BY registrations DESC;
+
+-- Total registrations per event *of a given type* 
+SELECT
+  e.event_id,
+  e.title,
+  e.type,
+  COUNT(r.registration_id) AS registrations
+FROM events e
+LEFT JOIN registrations r ON r.event_id = e.event_id
+WHERE e.college_id = :CollegeId
+  AND e.type = :EventType --Give type
+GROUP BY e.event_id, e.title, e.type
 ORDER BY registrations DESC;
 
 -- Attendance percentage for an event
 WITH counts AS (
   SELECT
-    (SELECT COUNT(*) FROM registrations WHERE event_id = :event_id) AS regs,
-    (SELECT COUNT(*) FROM attendance    WHERE event_id = :event_id) AS atts
+    (SELECT COUNT(*) FROM registrations WHERE event_id = :EventId) AS regs,
+    (SELECT COUNT(*) FROM attendance    WHERE event_id = :EventId) AS atts
 )
-SELECT regs, atts, ROUND(CASE WHEN regs=0 THEN 0.0 ELSE (atts*100.0)/regs END, 2) AS attendance_percent
+SELECT
+  regs,
+  atts,
+  ROUND(CASE WHEN regs = 0 THEN 0.0 ELSE (atts * 100.0) / regs END, 2) AS attendance_percent
 FROM counts;
 
--- Average feedback score
+-- Average feedback for an event
 SELECT ROUND(AVG(rating), 2) AS avg_feedback
 FROM feedback
-WHERE event_id = :event_id;
+WHERE event_id = :EventId;
 
--- Student participation (events attended)
-SELECT s.id AS student_id, s.name, COUNT(a.id) AS events_attended
+-- Student participation 
+SELECT
+  s.student_id,
+  s.student_name,
+  COUNT(a.attendance_id) AS events_attended
 FROM students s
-LEFT JOIN attendance a ON a.student_id = s.id
-WHERE s.id = :student_id
-GROUP BY s.id;
+LEFT JOIN attendance a ON a.student_id = s.student_id
+WHERE s.student_id = :StudentId
+GROUP BY s.student_id, s.student_name;
 
--- Top 3 most active students (by attendance)
-SELECT s.id, s.name, COUNT(a.id) AS attended
+-- Top N most active students in a college
+SELECT
+  s.student_id,
+  s.student_name,
+  COUNT(a.attendance_id) AS attended
 FROM students s
-JOIN attendance a ON a.student_id = s.id
-WHERE s.college_id = :college_id
-GROUP BY s.id
+JOIN attendance a ON a.student_id = s.student_id
+WHERE s.college_id = :CollegeId
+GROUP BY s.student_id, s.student_name
 ORDER BY attended DESC
-LIMIT 3;
+LIMIT :Limit;
 
--- Total registrations per event type (popularity)
-SELECT 
-    e.event_id, 
-    e.title, 
-    e.type, 
-    COUNT(r.registration_id) AS registrations
+-- Registrations aggregated by event 
+SELECT
+  e.type,
+  COUNT(r.registration_id) AS registrations
 FROM events e
-LEFT JOIN registrations r 
-    ON r.event_id = e.event_id
+LEFT JOIN registrations r ON r.event_id = e.event_id
 WHERE e.college_id = :CollegeId
-  AND e.type = :EventType
-GROUP BY e.event_id, e.title, e.type
+GROUP BY e.type
 ORDER BY registrations DESC;

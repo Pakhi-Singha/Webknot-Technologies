@@ -14,38 +14,38 @@ app = FastAPI(title="Campus Events API")
 Base.metadata.create_all(bind=engine)
 
 # ====== Schemas ======
-class CollegeIn(BaseModel):
-    name: str
-
 class BaseSchema(BaseModel):
-    model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)  # accepts camelCase too
+    model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
+
+class CollegeIn(BaseSchema):
+    college_name: str = Field(alias="CollegeName")
 
 class StudentIn(BaseSchema):
-    college_id: int = Field(alias="CollegeId")
+    college_id: int   = Field(alias="CollegeId")
     student_name: str = Field(alias="StudentName")
     email: str
     year: int | None = None
 
-class EventIn(BaseModel):
-    college_id: int
-    title: str
-    type: str
-    starts_at: datetime
-    ends_at: datetime
+class EventIn(BaseSchema):
+    college_id: int   = Field(alias="CollegeId")
+    title: str        = Field(alias="Title")
+    type: str         = Field(alias="Type")
+    starts_at: datetime = Field(alias="StartsAt")
+    ends_at: datetime   = Field(alias="EndsAt")
 
-class RegistrationIn(BaseModel):
-    student_id: int
-    event_id: int
+class RegistrationIn(BaseSchema):
+    student_id: int = Field(alias="StudentId")
+    event_id: int   = Field(alias="EventId")
 
-class CheckinIn(BaseModel):
-    student_id: int
-    event_id: int
+class CheckinIn(BaseSchema):
+    student_id: int = Field(alias="StudentId")
+    event_id: int   = Field(alias="EventId")
 
-class FeedbackIn(BaseModel):
-    student_id: int
-    event_id: int
-    rating: int = Field(ge=1, le=5)
-    comment: Optional[str] = None
+class FeedbackIn(BaseSchema):
+    student_id: int = Field(alias="StudentId")
+    event_id: int   = Field(alias="EventId")
+    rating: int = Field(ge=1, le=5, alias="Rating")   # API-level validation 1–5
+    comment: Optional[str] = Field(default=None, alias="Comment")
 
 # ====== CRUD endpoints ======
 @app.post("/colleges")

@@ -1,11 +1,12 @@
 from fastapi import FastAPI, Depends, HTTPException
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from typing import Optional, List
 from datetime import datetime
 from sqlalchemy.orm import Session
 from sqlalchemy import func, select, desc
 from .db import Base, engine, get_db
 from .models import College, Student, Event, Registration, Attendance, Feedback
+from pydantic.alias_generators import to_camel
 
 app = FastAPI(title="Campus Events API")
 
@@ -16,11 +17,14 @@ Base.metadata.create_all(bind=engine)
 class CollegeIn(BaseModel):
     name: str
 
-class StudentIn(BaseModel):
-    college_id: int
-    name: str
+class BaseSchema(BaseModel):
+    model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)  # accepts camelCase too
+
+class StudentIn(BaseSchema):
+    college_id: int = Field(alias="CollegeId")
+    student_name: str = Field(alias="StudentName")
     email: str
-    year: Optional[str] = None
+    year: int | None = None
 
 class EventIn(BaseModel):
     college_id: int

@@ -4,6 +4,7 @@ from typing import Optional, List
 from datetime import datetime
 from sqlalchemy.orm import Session
 from sqlalchemy import func, select, desc
+from sqlalchemy.exc import IntegrityError
 from .db import Base, engine, get_db
 from .models import College, Student, Event, Registration, Attendance, Feedback
 from pydantic.alias_generators import to_camel
@@ -118,42 +119,54 @@ def post_feedback(payload: FeedbackIn, db: Session = Depends(get_db)):
 @app.get("/reports/event-popularity")
 def event_popularity(college_id: int, type: Optional[str] = None, db: Session = Depends(get_db)):
     q = (
-        db.query(Event.id, Event.title, Event.type, func.count(Registration.id).label("registrations"))
-        .join(Registration, Registration.event_id == Event.id, isouter=True)
+        db.query(
+            Event.event_id,
+            Event.title,
+            Event.type,
+            func.count(Registration.registration_id).label("registrations")
+        )
+        .join(Registration, Registration.event_id == Event.event_id, isouter=True)
         .filter(Event.college_id == college_id)
-        .group_by(Event.id)
+        .group_by(Event.event_id)
         .order_by(desc("registrations"))
     )
+
     if type:
         q = q.filter(Event.type == type)
     return q.all()
 
 @app.get("/reports/student-participation")
 def student_participation(student_id: int, db: Session = Depends(get_db)):
-    total = db.query(func.count(Attendance.id)).filter(Attendance.student_id == student_id).scalar()
+    total = db.query(func.count(Attendance.attendance_id))\
+              .filter(Attendance.student_id == student_id).scalar()
     return {"student_id": student_id, "events_attended": total}
 
 @app.get("/reports/attendance")
 def attendance_percentage(event_id: int, db: Session = Depends(get_db)):
-    regs = db.query(func.count(Registration.id)).filter(Registration.event_id == event_id).scalar()
-    atts = db.query(func.count(Attendance.id)).filter(Attendance.event_id == event_id).scalar()
+    regs = db.query(func.count(Registration.registration_id))\
+             .filter(Registration.event_id == event_id).scalar()
+    atts = db.query(func.count(Attendance.attendance_id))\
+             .filter(Attendance.event_id == event_id).scalar()
     pct = (atts / regs * 100.0) if regs else 0.0
     return {"event_id": event_id, "registrations": regs, "attended": atts, "attendance_percent": round(pct, 2)}
 
 @app.get("/reports/average-feedback")
 def average_feedback(event_id: int, db: Session = Depends(get_db)):
     avg = db.query(func.avg(Feedback.rating)).filter(Feedback.event_id == event_id).scalar()
-    return {"event_id": event_id, "avg_feedback": round(float(avg), 2) if avg else None}
+    return {"event_id": event_id, "avg_feedback": round(float(avg), 2) if avg is not None else None}
 
 @app.get("/reports/top-active-students")
 def top_active_students(college_id: int, limit: int = 3, db: Session = Depends(get_db)):
     q = (
-        db.query(Student.id, Student.name, func.count(Attendance.id).label("attended"))
-        .join(Attendance, Attendance.student_id == Student.id)
+        db.query(
+            Student.student_id,
+            Student.student_name,
+            func.count(Attendance.attendance_id).label("attended")
+        )
+        .join(Attendance, Attendance.student_id == Student.student_id)
         .filter(Student.college_id == college_id)
-        .group_by(Student.id)
+        .group_by(Student.student_id)
         .order_by(desc("attended"))
         .limit(limit)
     )
     return q.all()
-

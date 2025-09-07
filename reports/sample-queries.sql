@@ -37,10 +37,15 @@ ORDER BY attended DESC
 LIMIT 3;
 
 -- Total registrations per event type (popularity)
-SELECT e.id, e.title, e.type, COUNT(r.id) AS registrations
+SELECT 
+    e.event_id, 
+    e.title, 
+    e.type, 
+    COUNT(r.registration_id) AS registrations
 FROM events e
-LEFT JOIN registrations r ON r.event_id = e.id
-WHERE e.college_id = :college_id AND e.type = :type
-GROUP BY e.id
+LEFT JOIN registrations r 
+    ON r.event_id = e.event_id
+WHERE e.college_id = :CollegeId
+  AND e.type = :EventType
+GROUP BY e.event_id, e.title, e.type
 ORDER BY registrations DESC;
-

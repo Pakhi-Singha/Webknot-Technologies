@@ -12,12 +12,12 @@
 - Event creation, student registration, attendance, feedback (rating 1–5).
 
 ## Database Schema (ER sketch)
-- colleges(int college_id (primary_key), string college_name)
-- students(int student_id (primary_key), int college_id (foreign_key), string student_name, string email, int year)
-- events(int event_id (primary_key), int college_id (foreign_key), string title, string type, datetime starts_at, datetime ends_at)
-- registrations(int college_id (foreign_key), int student_id (foreign_key), int event_id (foreign_key), datetime created_at)
-- attendance(int college_id (foreign_key), int student_id (foreign_key), int event_id (foreign_key), datetime checked_in_at)
-- feedback(int college_id (foreign_key), int student_id (foreign_key), int event_id (foreign_key), int rating =>0 and rating <=5, string comment, datetime created_at)
+- colleges(college_id PK, college_name UNIQUE)
+- students(student_id PK, college_id FK → colleges, student_name, email, year, UNIQUE(college_id,email))
+- events(event_id PK, college_id FK → colleges, title, type, starts_at, ends_at, UNIQUE(college_id,title,starts_at))
+- registrations(registration_id PK, student_id FK, event_id FK, created_at, UNIQUE(student_id,event_id))
+- attendance(attendance_id PK, student_id FK, event_id FK, checked_in_at, UNIQUE(student_id,event_id))
+- feedback(feedback_id PK, student_id FK, event_id FK, rating 1–5, comment, created_at, UNIQUE(student_id,event_id))
 
 ## API Design 
 - POST /events
@@ -33,12 +33,12 @@
 - GET /reports/event-popularity?type=Workshop|Fest|Seminar
 
 ## Workflows
-- Create a registration script to simulate student and staff registrations on the portal.
-- Create a login for the admin portal with authentication (This login page can be extended to include students, staff, etc).
-- Create an event updation script that simulates staff publishing events that students can sign up for.
-- Create an event registration script that simulates students signing up for an event.
-- Create an attendance monitoring system that marks attendance for each day a student attends the event they signed up for. It can include feedback after student is marked.
-- Create an event reporting system that can be accessed by admin and uses the APIs to fetch results.
+- Script to seed students/staff; also add an admin.
+- Admin login (auth) for portal.
+- Staff publishes/updates events.
+- Students register for events.
+- Attendance capture (one check-in per event per student).
+- Reports for admin via APIs.
 
 ## Scale & Multi-tenancy
 - Keep per-college partitioning via foreign keys + indexed filters by college_id.

@@ -11,6 +11,7 @@ After cloning, copy paste the following commands in the terminal if you're using
 - & .\\.venv\Scripts\Activate.ps1
 - pip install -r requirements.txt
 - python -m uvicorn main:app --reload
+
 Otherwise use suitable Linux/Mac commands instead, based on your environment.
 
 If database is empty, seed it using the below command in terminal.

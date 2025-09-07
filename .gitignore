@@ -1,5 +1,25 @@
+# Local env & secrets
 .venv/
-__pycache__/
-*.pyc
-*.db
+venv/
 .env
+.env.*
+
+# Python noise
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Editors/OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Local databases
+*.db
+campus.db
+
+# Logs
+*.log

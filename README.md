@@ -10,9 +10,16 @@ After cloning, copy paste the following commands in the terminal if you're using
 - python -m venv .venv #Remember to select the new environment for the workspace
 - & .\\.venv\Scripts\Activate.ps1
 - pip install -r requirements.txt
-- python -m uvicorn main:app --reload
+- cd backend
+- python -c "from db import engine, Base; import models; Base.metadata.create_all(bind=engine); print('Tables created')" #create tables
+- python -c "import sqlite3; sql=open('seed.sql','r',encoding='utf-8').read(); con=sqlite3.connect('campus.db'); con.executescript(sql); con.commit(); con.close(); print('Seeded campus.db')" #seed tables with seed.sql data, you can use other data of the same format if you want
+- python -m uvicorn main:app --reload #run
 
 Otherwise use suitable Linux/Mac commands instead, based on your environment.
 
-If database is empty, seed it using the below command in terminal.
-- sqlite3 campus.db < seed.sql
+These were the executed commands for docs screenshots:
+- GET /reports/event-popularity?college_id=1
+- GET /reports/event-popularity?college_id=1&type=Workshop
+- GET /reports/attendance?event_id=1
+- GET /reports/average-feedback?event_id=1
+- GET /reports/top-active-students?college_id=1&limit=3

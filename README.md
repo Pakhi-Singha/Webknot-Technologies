@@ -1,4 +1,29 @@
 # Webknot-Technologies
+## Description
+
+This is a repository providing a UI to an admin to monitor the activities occuring on the campus database via the web and mobile applications. 
+
+It's divided into 4 folders.
+
+The backend folder contains:
+db.py: this python file connects the sql database to the server.
+main.py: this python file connects to the frontend and provides a back end API to perform GET and POST operations on the server. These operations are used to monitor modifications, registraions, updating of events, attendance tallies, etc, actions, taken by the staff and students.
+models.py: this python file creates the classes which serve as blueprints for various objects like students, events, etc.
+requirements.txt: this text file contains all the necessary downloads along with their versions required to run this repository.
+seed.sql: this sql file seeds mock input in the database to run queries.
+
+The docs folder contains:
+ai-log: AI chat logs used to build this application.
+design.md: the plan created before beginning work on this application. It discusses everything this application needs to accomplish.
+
+The frontend folder contains:
+index.html: the html file used to stylize the application UI.
+
+The reports folder contains:
+screenshots folder: these are the output snippets with various queries.
+sample-queries.sql: these are the mock queries used to test the database.
+
+The file .gitignore is used to prevent clutter (for example the older python environments, other files on the desktop, etc) from running with the application, preventing performance degradation.
 
 ## How to run
 

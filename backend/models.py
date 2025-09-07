@@ -4,7 +4,7 @@ from sqlalchemy import (
     UniqueConstraint, CheckConstraint, func
 )
 from sqlalchemy.orm import Mapped, mapped_column
-from .db import Base
+from db import Base
 
 class College(Base):
     __tablename__ = "colleges"

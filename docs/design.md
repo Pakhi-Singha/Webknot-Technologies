@@ -12,12 +12,12 @@
 - Event creation, student registration, attendance, feedback (rating 1–5).
 
 ## Database Schema (ER sketch)
-- colleges(int college_id (primary_key), char college_name)
-- students(int student_id (primary_key), int college_id (foreign_key), char student_name, char email, int year)
-- events(int event_id (primary_key), int college_id (foreign_key), char title, char type, time starts_at, time ends_at)
-- registrations(int college_id (foreign_key), student_id (foreign_key), event_id (foreign_key), date created_at)
-- attendance(int college_id (foreign_key), int student_id (foreign_key), int event_id (foreign_key), time checked_in_at)
-- feedback(int college_id (foreign_key), int student_id (foreign_key), int event_id (foreign_key), int rating =>0 and rating <=5, char comment, date created_at)
+- colleges(int college_id (primary_key), string college_name)
+- students(int student_id (primary_key), int college_id (foreign_key), string student_name, string email, int year)
+- events(int event_id (primary_key), int college_id (foreign_key), string title, string type, datetime starts_at, datetime ends_at)
+- registrations(int college_id (foreign_key), int student_id (foreign_key), int event_id (foreign_key), datetime created_at)
+- attendance(int college_id (foreign_key), int student_id (foreign_key), int event_id (foreign_key), datetime checked_in_at)
+- feedback(int college_id (foreign_key), int student_id (foreign_key), int event_id (foreign_key), int rating =>0 and rating <=5, string comment, datetime created_at)
 
 ## API Design 
 - POST /events

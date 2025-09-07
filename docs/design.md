@@ -30,7 +30,7 @@
 - GET  /reports/attendance?event_id=...
 - GET  /reports/average-feedback?event_id=...
 - GET  /reports/top-active-students?college_id=...&limit=3
-- GET /reports/event-popularity?type=Workshop|Fest|Seminar
+- GET /reports/event-popularity?college_id=...&type=Workshop|Fest|Seminar
 
 ## Workflows
 - Script to seed students/staff; also add an admin.
